@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { ShoppingBag, Loader, AlertCircle, Plus, X } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const Productos = () => {
   const navigate = useNavigate();
@@ -89,7 +91,31 @@ const Productos = () => {
                 <span className="text-xs text-slate-400">Stock: {prod.stock}</span>
               </div>
             </div>
+
+            {/* seccion del mapa */ }
+            <div className="h-48 w-full border-t border-slate-100 z-0 relative">
+              <MapContainer 
+              center={[prod.latitud || 20.6216302 , prod.longitud || -100.2744693]}
+              zoom={13}
+              style={{ height: "100%", width: "100%", zIndex: 0 }}
+            >
+            {/* Este es el servidor de openstreetmap que nos regala los mapas gratis */ }
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            {/* El marcador que muestra la ubicación del producto */ }  
+            <Marker position={[prod.latitud || 20.6216302 , prod.longitud || -100.2744693]}>
+              <Popup>
+                {prod.nombre} - Stock: {prod.stock}
+              </Popup>
+            </Marker>
+          </MapContainer> 
+                
+            </div>
+
           </div>
+
         ))}
       </div>
     </div>

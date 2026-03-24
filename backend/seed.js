@@ -2,6 +2,19 @@ const pool = require('./src/config/db');
 
 const poblarBaseDeDatos = async () => {
     try {
+        console.log("⏳ Creando categorías...");
+
+        // Primero insertamos las categorías
+        const categorias = ['Electronics', 'Jewelery', 'Men\'s Clothing', 'Women\'s Clothing'];
+        const categoriasInsertadas = {};
+
+        for (const categoria of categorias) {
+            const query = `INSERT INTO categorias (nombre) VALUES ($1) RETURNING id`;
+            const result = await pool.query(query, [categoria]);
+            categoriasInsertadas[categoria] = result.rows[0].id;
+        }
+
+        console.log("✅ Categorías creadas:", categoriasInsertadas);
         console.log("⏳ Consumiendo FakeStore API...");
 
         // Usamos el fetch nativo de Node.js para traer 20 productos de prueba
@@ -18,13 +31,16 @@ const poblarBaseDeDatos = async () => {
             `;
 
             // Mapeamos los datos de FakeStore a nuestra estructura
+            // Mapeamos la categoría de FakeStore a nuestras categorías
+            const categoriaId = categoriasInsertadas[prod.category] || categoriasInsertadas['Electronics'];
+
             const valores = [
                 prod.title.substring(0, 250), // Aseguramos que no pase el límite del VARCHAR
                 prod.price,
                 Math.floor(Math.random() * 50) + 1, // Inventamos un stock aleatorio entre 1 y 50
                 prod.description,
                 prod.image,
-                1 // Asignamos una categoría por defecto
+                categoriaId // Usamos la categoría mapeada
                 // Nota: Dejamos youtube_id en blanco (null) para que tus alumnos lo llenen en clase
             ];
 
