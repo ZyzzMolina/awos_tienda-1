@@ -4,6 +4,7 @@ import { api } from '../services/api';
 import { ShoppingBag, Loader, AlertCircle, Plus, X } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { ShoppingBag, Loader, AlertCircle, Plus, X, MessageCircle, Twitter, Share2 } from 'lucide-react';
 
 const Productos = () => {
   const navigate = useNavigate();
@@ -47,6 +48,23 @@ const Productos = () => {
 
   if (loading) return <div className="flex justify-center items-center h-64"><Loader className="animate-spin text-blue-600" size={48} /></div>;
   if (error) return <div className="bg-red-100 text-red-700 p-4 rounded-lg flex items-center gap-2"><AlertCircle /> {error}</div>;
+
+  // Funciones para compartir en redes sociales - WEB INTENTS
+
+  const compartirwhatsapp = (prod) => {
+    const mensaje = `¡Hola! Estoy interesado en el producto "${prod.nombre}" que vi en tu inventario. ¿Podrías darme más detalles o cómo puedo adquirirlo?`;
+    const textocodificado = encodeURIComponent(mensaje);
+    const url = `https://wa.me/5211234567890?text=${textocodificado}`;
+
+    window.open(url, '_blank');
+  };
+
+  const compartirTwitter = (prod) => {
+    const mensaje = `¡Hola! Estoy interesado en el producto "${prod.nombre}" que vi en tu inventario. ¿Podrías darme más detalles o cómo puedo adquirirlo?`;
+    const textocodificado = encodeURIComponent(mensaje);
+    const url = `https://twitter.com/intent/tweet?text=${textocodificado}`;
+    window.open(url, '_blank');
+  };
 
   return (
     <div>
