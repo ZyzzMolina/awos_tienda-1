@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { ShoppingBag, Loader, AlertCircle, Plus, X } from 'lucide-react';
+import { ShoppingBag, Loader, AlertCircle, Plus, X, MessageCircle, Twitter, Share2 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ShoppingBag, Loader, AlertCircle, Plus, X, MessageCircle, Twitter, Share2 } from 'lucide-react';
 
 const Productos = () => {
   const navigate = useNavigate();
@@ -51,10 +50,10 @@ const Productos = () => {
 
   // Funciones para compartir en redes sociales - WEB INTENTS
 
-  const compartirwhatsapp = (prod) => {
+  const compartirWhatsApp = (prod) => {
     const mensaje = `¡Hola! Estoy interesado en el producto "${prod.nombre}" que vi en tu inventario. ¿Podrías darme más detalles o cómo puedo adquirirlo?`;
     const textocodificado = encodeURIComponent(mensaje);
-    const url = `https://wa.me/5211234567890?text=${textocodificado}`;
+    const url = `https://wa.me/524425945253?text=${textocodificado}`;
 
     window.open(url, '_blank');
   };
@@ -102,13 +101,42 @@ const Productos = () => {
                 <img src={prod.imagen_url || "https://via.placeholder.com/150"} alt={prod.nombre} className="max-h-full object-contain bg-white w-full" />
               )}
             </div>
+            
             <div className="p-4 flex-1 flex flex-col">
               <h3 className="font-bold text-lg text-slate-800 line-clamp-1">{prod.nombre}</h3>
               <div className="flex justify-between items-center mt-auto pt-4">
                 <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded font-bold">${prod.precio}</span>
                 <span className="text-xs text-slate-400">Stock: {prod.stock}</span>
               </div>
+
+
+              {/* NUEVO: Barra de Redes Sociales */}
+<div className="pt-3 flex justify-between items-center bg-slate-50 -mx-4 -mb-4 px-4 py-3 rounded-b-xl border-t border-slate-100">
+  <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
+    <Share2 size={14} /> Compartir:
+  </span>
+  <div className="flex gap-2">
+    <button
+      onClick={() => compartirWhatsApp(prod)}
+      className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full transition shadow-sm"
+      title="Compartir en WhatsApp"
+    >
+      <MessageCircle size={16} />
+    </button>
+    <button
+      onClick={() => compartirTwitter(prod)}
+      className="bg-black hover:bg-slate-800 text-white p-2 rounded-full transition shadow-sm"
+      title="Compartir en X (Twitter)"
+    >
+      <Twitter size={16} />
+    </button>
+  </div>
+</div>
+
+              
             </div>
+
+            
 
             {/* seccion del mapa */ }
             <div className="h-48 w-full border-t border-slate-100 z-0 relative">
