@@ -10,7 +10,7 @@ const getProductos = async (req, res) => {
     }
 };
 
-const crearProducto = async (req, res) => {0
+const crearProducto = async (req, res) => {
     const { nombre, precio, stock, descripcion, imagen_url, categoria_id, youtube_id } = req.body;
 
     try {
