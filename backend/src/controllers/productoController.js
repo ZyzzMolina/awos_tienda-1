@@ -11,20 +11,20 @@ const getProductos = async (req, res) => {
 };
 
 const crearProducto = async (req, res) => {
-    const { nombre, precio, stock, descripcion, imagen_url, categoria_id, youtube_id } = req.body;
+    const { nombre, precio, stock, descripcion, imagen_url, id_categoria, youtube_id } = req.body;
 
     try {
-        if (!nombre || !precio || !categoria_id) {
+        if (!nombre || !precio || !id_categoria) {
             return res.status(400).json({ msg: "Nombre, precio y categoría son obligatorios" });
         }
 
         const query = `
-            INSERT INTO productos (nombre, precio, stock, descripcion, imagen_url, categoria_id, youtube_id)
+            INSERT INTO productos (nombre, precio, stock, descripcion, imagen_url, id_categoria, youtube_id)
             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
         `;
 
         const response = await pool.query(query, [
-            nombre, precio, stock || 0, descripcion || '', imagen_url || '', categoria_id, youtube_id || null
+            nombre, precio, stock || 0, descripcion || '', imagen_url || '', id_categoria, youtube_id || null
         ]);
 
         res.status(201).json({

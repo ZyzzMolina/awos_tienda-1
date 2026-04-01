@@ -12,7 +12,7 @@ const Productos = () => {
   const [error, setError] = useState(null);
   const [formularioVisible, setFormularioVisible] = useState(false);
   const [nuevoProducto, setNuevoProducto] = useState({
-    nombre: '', precio: '', stock: '', imagen_url: '', categoria_id: 1, youtube_id: ''
+    nombre: '', precio: '', stock: '', imagen_url: '', id_categoria: 1, youtube_id: ''
   });
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const Productos = () => {
       const data = await api.post('/productos', nuevoProducto);
       setProductos([...productos, data.producto]);
       setFormularioVisible(false);
-      setNuevoProducto({ nombre: '', precio: '', stock: '', imagen_url: '', categoria_id: 1, youtube_id: '' });
+      setNuevoProducto({ nombre: '', precio: '', stock: '', imagen_url: '', id_categoria: 1, youtube_id: '' });
     } catch (err) {
       alert("Error al crear el producto");
     }
