@@ -1,12 +1,22 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-});
+let pool;
+
+// Si estamos en Render, usar DATABASE_URL; si no, usar variables individuales
+if (process.env.DATABASE_URL) {
+    // En Render, usar la URL de conexión completa
+    pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }
+    });
+    console.log("📡 Conectando a BD remota (Render)");
+} else {
+    // En desarrollo local
+    pool = new Pool({
+       connectionString: process.env.DATABASE_URL
+    });
+    console.log("🖥️ Conectando a BD local");
+}
 
 module.exports = pool;
