@@ -5,9 +5,9 @@ const Layout = ({ children }) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className={`flex flex-col ${!isMobile && 'h-screen'} bg-slate-100`}>
+    <div className={`flex ${!isMobile && 'h-screen'} bg-slate-100`}>
       <Sidebar />
-      <main className={`${!isMobile ? 'flex-1 overflow-y-auto' : 'overflow-y-auto pb-4'} p-4 md:p-8`}>
+      <main className={`${isMobile ? 'w-full mt-16' : 'flex-1'} overflow-y-auto p-4 md:p-8`}>
         {children}
       </main>
     </div>
