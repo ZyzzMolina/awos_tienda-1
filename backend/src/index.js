@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const pool = require('./config/db');
 const productoRoutes = require('./routes/productoRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -68,15 +67,6 @@ initDatabase().then(() => {
     // Rutas API
     app.use('/api/productos', productoRoutes);
     app.use('/api/auth', authRoutes);
-
-    // Servir archivos estáticos del frontend
-    const frontendPath = path.join(__dirname, '../../frontend/dist');
-    app.use(express.static(frontendPath));
-
-    // Middleware para SPA: todas las rutas que no sean API deben servir index.html
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(frontendPath, 'index.html'));
-    });
 
     app.listen(PORT, () => {
         console.log(`Servidor corriendo en http://localhost:${PORT}`);
