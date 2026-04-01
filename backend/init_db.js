@@ -1,21 +1,16 @@
-const express = require('express');
-const cors = require('cors');
-const pool = require('./config/db');
-const productoRoutes = require('./routes/productoRoutes');
-const authRoutes = require('./routes/authRoutes');
-require('dotenv').config();
+const { Pool } = require('pg');
 
-const app = express();
-const PORT = process.env.PORT || 4000;
+// URL de conexión completa desde Render (External Database URL)
+const connectionString = 'postgresql://zyzz_molina06:mzJ4jwqzfISiNd9iF140r3Ch3AYQfKOQ@dpg-d764rveslomo73f7m8a0-a.onrender.com:5432/awos_tienda_pg1';
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
+const pool = new Pool({
+    connectionString: connectionString,
+    ssl: { rejectUnauthorized: false }
+});
 
-// Inicializar BD
-const initDatabase = async () => {
+const initDB = async () => {
     try {
-        console.log("⏳ Inicializando base de datos...");
+        console.log("⏳ Conectando a BD Render...");
         
         // Crear tabla usuarios
         await pool.query(`
@@ -27,7 +22,8 @@ const initDatabase = async () => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-        
+        console.log("✅ Tabla usuarios creada");
+
         // Crear tabla categorías
         await pool.query(`
             CREATE TABLE IF NOT EXISTS categorias (
@@ -36,7 +32,8 @@ const initDatabase = async () => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-        
+        console.log("✅ Tabla categorias creada");
+
         // Crear tabla productos
         await pool.query(`
             CREATE TABLE IF NOT EXISTS productos (
@@ -51,24 +48,23 @@ const initDatabase = async () => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-        
+        console.log("✅ Tabla productos creada");
+
         // Crear índices
         await pool.query(`CREATE INDEX IF NOT EXISTS idx_usuarios_email ON usuarios(email);`);
         await pool.query(`CREATE INDEX IF NOT EXISTS idx_productos_categoria ON productos(categoria_id);`);
+        console.log("✅ Índices creados");
+
+        console.log("🎉 ¡Base de datos inicializada correctamente!");
         
-        console.log("✅ Base de datos lista");
+        await pool.end();
+        process.exit(0);
     } catch (error) {
-        console.error("⚠️ Error inicializando BD:", error.message);
+        console.error("❌ Error capturado completo:");
+        console.error(error);
+        await pool.end();
+        process.exit(1);
     }
 };
 
-// Inicializar BD antes de escuchar
-initDatabase().then(() => {
-    // Rutas
-    app.use('/api/productos', productoRoutes);
-    app.use('/api/auth', authRoutes);
-
-    app.listen(PORT, () => {
-        console.log(`Servidor corriendo en http://localhost:${PORT}`);
-    });
-});
+initDB();
