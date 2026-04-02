@@ -33,10 +33,39 @@ const Productos = () => {
     cargarProductos();
   }, [navigate]);
 
+  // Función para extraer y limpiar el youtube_id
+  const limpiarYoutubeId = (input) => {
+    if (!input) return '';
+    
+    // Si es una URL, extraer el ID
+    let id = input;
+    
+    // Casos: https://youtube.com/watch?v=ID o https://youtu.be/ID
+    const urlMatch = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+    if (urlMatch && urlMatch[1]) {
+      id = urlMatch[1];
+    }
+    
+    // Limpiar espacios en blanco
+    id = id.trim();
+    
+    // Validar que solo contenga caracteres válidos (alfanuméricos, guiones y guiones bajos)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(id)) {
+      return id;
+    }
+    
+    return input; // Devolver el input original si no es válido (para que el backend lo valide)
+  };
+
   const handleCrear = async (e) => {
     e.preventDefault();
+    const productoLimpio = {
+      ...nuevoProducto,
+      youtube_id: limpiarYoutubeId(nuevoProducto.youtube_id)
+    };
+    
     try {
-      const data = await api.post('/productos', nuevoProducto);
+      const data = await api.post('/productos', productoLimpio);
       setProductos([...productos, data.producto]);
       setFormularioVisible(false);
       setNuevoProducto({ nombre: '', precio: '', stock: '', imagen_url: '', id_categoria: 1, youtube_id: '' });
@@ -91,12 +120,15 @@ const Productos = () => {
         {productos.map((prod) => (
           <div key={prod.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition border border-slate-100 overflow-hidden flex flex-col">
             <div className="h-48 bg-slate-900 flex items-center justify-center border-b overflow-hidden">
-              {prod.youtube_id ? (
+              {prod.youtube_id && prod.youtube_id.trim() ? (
                 <iframe width="100%" height="100%"
-                        src={`https://www.youtube.com/embed/${prod.youtube_id}`}
-                        title="YouTube video player" frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen></iframe>
+                        src={`https://www.youtube.com/embed/${encodeURIComponent(prod.youtube_id.trim())}?rel=0`}
+                        title="YouTube video player" 
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        referrerPolicy="no-referrer-when-downgrade"
+                        loading="lazy"></iframe>
               ) : (
                 <img src={prod.imagen_url || "https://via.placeholder.com/150"} alt={prod.nombre} className="max-h-full object-contain bg-white w-full" />
               )}
